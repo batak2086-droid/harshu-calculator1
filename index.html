@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harsh Calculator</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;padding:20px;
+ display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(ellipse at top,#241044,#090711 65%);
+ color:white;font-family:Arial,sans-serif
+}
+.app{width:100%;max-width:380px}
+.insta{
+ display:block;text-align:center;text-decoration:none;
+ color:#e9b5ff;font-weight:bold;padding:12px;
+ border:1px solid #6d28d9;border-radius:14px;
+ margin-bottom:18px;box-shadow:0 0 15px #7c3aed33
+}
+.insta span{display:block;font-size:11px;color:#b5a4c9;margin-top:5px}
+.calculator{
+ padding:20px;border-radius:25px;
+ background:#110d1c;border:1px solid #57268a;
+ box-shadow:0 0 30px #7c3aed30
+}
+.brand{color:#c084fc;font-size:12px;letter-spacing:3px}
+#display{
+ width:100%;height:95px;background:transparent;border:0;
+ outline:none;color:white;text-align:right;font-size:38px;
+ padding:15px 0
+}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+button{
+ height:61px;border:1px solid #30213f;border-radius:16px;
+ background:#21182f;color:white;font-size:21px;
+ cursor:pointer;touch-action:manipulation
+}
+button:active{transform:scale(.95)}
+.op{background:#46216c;border-color:#7541a5}
+.clear{background:#632a77}
+.equal{background:linear-gradient(135deg,#a855f7,#e879f9);color:#160923;font-weight:bold}
+.footer{text-align:center;margin-top:20px;color:#f0abfc;font-size:14px}
+.footer small{display:block;color:#92839f;margin-top:7px}
+</style>
+</head>
+<body>
+<main class="app">
+<a class="insta" href="https://www.instagram.com/ht_harshtiwari8/" target="_blank" rel="noopener noreferrer">
+  ◎ @ht_harshtiwari8
+  <span>TAP TO OPEN INSTAGRAM ↗</span>
+</a>
+<section class="calculator">
+  <div class="brand">HARSH CALCULATOR</div>
+  <input id="display" value="0" readonly aria-label="Calculator display">
+  <div class="keys">
+    <button class="clear" onclick="resetCalc()">AC</button>
+    <button class="op" onclick="bracket()">( )</button>
+    <button class="op" onclick="percent()">%</button>
+    <button class="op" onclick="add('/')">÷</button>
+
+    <button onclick="add('7')">7</button>
+    <button onclick="add('8')">8</button>
+    <button onclick="add('9')">9</button>
+    <button class="op" onclick="add('*')">×</button>
+
+    <button onclick="add('4')">4</button>
+    <button onclick="add('5')">5</button>
+    <button onclick="add('6')">6</button>
+    <button class="op" onclick="add('-')">−</button>
+
+    <button onclick="add('1')">1</button>
+    <button onclick="add('2')">2</button>
+    <button onclick="add('3')">3</button>
+    <button class="op" onclick="add('+')">+</button>
+
+    <button onclick="backspace()">⌫</button>
+    <button onclick="add('0')">0</button>
+    <button onclick="add('.')">.</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+</section>
+<footer class="footer">
+  Made with ❤️ Harsh Tiwari
+  <small>Simple • Stylish • Made with love</small>
+</footer>
+</main>
+<script>
+const display=document.getElementById('display');
+let expr='',fresh=false;
+function show(){display.value=expr||'0'}
+function add(v){
+ if(fresh && /[0-9.(]/.test(v))expr='';
+ fresh=false;
+ if(expr.length<100)expr+=v;
+ show()
+}
+function resetCalc(){expr='';fresh=false;show()}
+function backspace(){expr=expr.slice(0,-1);fresh=false;show()}
+function bracket(){
+ const opens=(expr.match(/\(/g)||[]).length;
+ const closes=(expr.match(/\)/g)||[]).length;
+ add(opens>closes?')':'(')
+}
+function percent(){
+ const m=expr.match(/(\d*\.?\d+)$/);
+ if(m)expr=expr.slice(0,-m[0].length)+(Number(m[0])/100);
+ show()
+}
+function calculate(){
+ if(!expr)return;
+ try{
+  if(!/^[0-9+\-*/().\s]+$/.test(expr))throw Error();
+  let result=Function('"use strict";return ('+expr+')')();
+  if(!Number.isFinite(result))throw Error();
+  expr=String(Number(result.toPrecision(12)));
+  fresh=true;show()
+ }catch(e){display.value='Error';expr='';fresh=true}
+}
+document.addEventListener('keydown',e=>{
+ if(/^[0-9.+\-*/()]$/.test(e.key))add(e.key);
+ else if(e.key==='Enter'||e.key==='=')calculate();
+ else if(e.key==='Backspace')backspace();
+ else if(e.key==='Escape')resetCalc()
+});
+</script>
+</body>
+</html>
